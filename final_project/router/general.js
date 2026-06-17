@@ -111,6 +111,21 @@ public_users.get('/title/:title',function (req, res) {
   return res.status(404).json({message: "No books found for the given title"});
 });
 
+// Get book details based on title using Axios async/await
+public_users.get('/axios/title/:title', async function (req, res) {
+  try {
+    const title = req.params.title;
+    const response = await axios.get(`http://localhost:3000/title/${encodeURIComponent(title)}`);
+    const titleData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+    return res.status(200).json(titleData);
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({message: "No books found for the given title"});
+    }
+    return res.status(500).json({message: 'Unable to fetch title details via Axios', error: error.message});
+  }
+});
+
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   const isbn = req.params.isbn;
