@@ -47,7 +47,22 @@ public_users.get('/isbn/:isbn',function (req, res) {
     return res.status(200).json(book);
   }
   return res.status(404).json({message: "Book not found"});
- });
+});
+
+// Get book details based on ISBN using Axios async/await
+public_users.get('/axios/isbn/:isbn', async function (req, res) {
+  try {
+    const isbn = req.params.isbn;
+    const response = await axios.get(`http://localhost:3000/isbn/${isbn}`);
+    const bookData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+    return res.status(200).json(bookData);
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return res.status(404).json({message: "Book not found"});
+    }
+    return res.status(500).json({message: 'Unable to fetch book details via Axios', error: error.message});
+  }
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
